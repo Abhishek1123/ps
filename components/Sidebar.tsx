@@ -50,15 +50,7 @@ export default function Sidebar() {
             <BiMenuAltLeft size={30} />
           </button>
 
-          <Link
-            href='https://github.com/zwelhtetyan/tiktok-clone'
-            target='_blank'
-            aria-label='Home'
-            className='flex max-w-[150px] items-center justify-center rounded-md bg-primary p-1 text-sm text-white hover:bg-primary/90 dark:border-darkSecondary dark:bg-darkBtn dark:hover:bg-darkBtnHover'
-          >
-            <RiGithubFill size={22} />
-            <p className='ml-2'>Stars on Github</p>
-          </Link>
+          
         </div>
 
         <div className='flex gap-2'>
