@@ -16,8 +16,8 @@ import { closeSidebar } from '../utils/sidebar-drawer';
 
 const metadata = {
   description:
-    'TikTok, also known in China as Douyin, is a short-form video hosting service owned by the Chinese company ByteDance. It hosts user-submitted videos, which can range in duration from 3 seconds to 10 minutes.',
-  title: 'TikTok - Make Your Day',
+    'Property Suchna is Indore\'s premier real estate news application, delivering the latest updates and insights about the local property market.',
+  title: 'Property Suchna - Your Gateway to Indore Real Estate',
 };
 
 interface Props {
