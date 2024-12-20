@@ -106,6 +106,18 @@ export default function Upload() {
     setIsPosting(false);
   }
 
+  const handleSubmit = async () => {
+    try {
+      const doc = {
+        _type: 'post',
+        // ... other fields
+      }
+      await client.create(doc);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   function handleDiscard() {
     setVideoAsset(null);
     setCaption('');
