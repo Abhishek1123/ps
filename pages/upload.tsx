@@ -1,271 +1,71 @@
-import Head from 'next/head';
-import { FaCloudUploadAlt } from 'react-icons/fa';
-import SelectTopic from '../components/SelectTopic';
+// components/Upload.tsx
+import { useState } from 'react';
 import { client } from '../utils/client';
-import { useEffect, useState } from 'react';
-import { SanityAssetDocument } from '@sanity/client';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import Layout from '../components/Layout';
-import axios from 'axios';
-import { ROOT_URL } from '../utils';
-import { createClient } from '@sanity/client';
 
-interface Event<T = EventTarget> {
-  target: T;
-}
-
-const noTopic = { name: 'No Topic', icon: '' };
-
-export default function Upload() {
-  const { data: user, status }: any = useSession();
-  const router = useRouter();
-
-  const [videoAsset, setVideoAsset] = useState<SanityAssetDocument | null>(
-    null,
-  );
-  const [caption, setCaption] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState(noTopic);
+const Upload = () => {
   const [isUploading, setIsUploading] = useState(false);
-  const [isPosting, setIsPosting] = useState(false);
-  const [isLargeFile, setIsLargeFile] = useState({ message: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [wrongFileType, setWrongFileType] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  const upload = async (e: any) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const selectedFile = e.target.files[0];
-      if (!selectedFile) return;
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-      const fileTypes = ['image/png', 'image/jpeg', 'video/mp4', 'video/webm'];
-      if (!fileTypes.includes(selectedFile.type)) {
-        setWrongFileType(true);
-        return;
+      // Reset states
+      setIsUploading(true);
+      setUploadError(null);
+      setUploadProgress(0);
+
+      // Validate file
+      if (!validateFile(file)) {
+        throw new Error('Invalid file type or size');
       }
 
-      // Add loading state
-      setIsLoading(true);
+      // Log environment variables (redacted)
+      console.log('ProjectID exists:', !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
+      console.log('Token exists:', !!process.env.NEXT_PUBLIC_SANITY_TOKEN);
 
-      // Check if environment variables exist
-      if (!process.env.NEXT_PUBLIC_SANITY_TOKEN) {
-        throw new Error('Sanity token not configured');
-      }
-
-      const client = createClient({
-        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
-        dataset: 'production',
-        apiVersion: '2022-03-07',
-        token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
-        useCdn: false,
+      const result = await client.assets.upload('file', file, {
+        contentType: file.type,
+        filename: file.name,
       });
 
-      const data = await client.assets.upload('file', selectedFile, {
-        contentType: selectedFile.type,
-        filename: selectedFile.name,
-      });
+      console.log('Upload successful:', result?._id);
+      setUploadProgress(100);
+      return result;
 
-      setVideoAsset(data);
-      setIsLoading(false);
     } catch (error) {
-      console.error('Upload error:', error);
-      setIsLoading(false);
-      // Show user-friendly error
-      alert('Upload failed. Please try again.');
+      console.error('Upload failed:', error);
+      setUploadError(error?.message || 'Upload failed');
+      return null;
+
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  async function handleUpload() {
-    if (!caption || !videoAsset) return;
-
-    setIsPosting(true);
-
-    const doc = {
-      _type: 'post',
-      caption,
-      video: {
-        _type: 'file',
-        asset: {
-          _type: 'reference',
-          _ref: videoAsset._id,
-        },
-      },
-      userId: user?._id,
-      postedBy: {
-        _type: 'postedBy',
-        _ref: user?._id,
-      },
-      topic: selectedTopic.name === 'No Topic' ? '' : selectedTopic.name,
-    };
-
-    await axios.post(`${ROOT_URL}/api/post`, doc);
-
-    handleDiscard();
-
-    router.push('/');
-
-    setIsPosting(false);
-  }
-
-  const handleSubmit = async () => {
-    try {
-      const doc = {
-        _type: 'post',
-        // ... other fields
-      }
-      await client.create(doc);
-    } catch (error) {
-      console.log(error);
-    }
+  const validateFile = (file: File) => {
+    const validTypes = ['image/jpeg', 'image/png', 'video/mp4'];
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    return validTypes.includes(file.type) && file.size <= maxSize;
   };
-
-  function handleDiscard() {
-    setVideoAsset(null);
-    setCaption('');
-    setSelectedTopic(noTopic);
-    setIsPosting(false);
-  }
-
-  useEffect(() => {
-    if (status !== 'loading' && !user) {
-      router.back();
-    }
-  }, [user, router, status]);
 
   return (
-    <Layout>
-      <Head>
-        <title>Upload | Property Suchna</title>
-        
-      </Head>
-
-      <div className='h-[calc(100vh-97px)] w-full overflow-hidden overflow-y-auto text-gray-600 dark:text-gray-200'>
-        <div className='mx-auto mb-10 max-w-4xl overflow-hidden rounded-lg border p-4 shadow-sm dark:border-darkBtn xs:mb-0 xs:p-6'>
-          <div className='mb-8'>
-            <h2 className='text-2xl font-bold'>Upload video</h2>
-            <p className='text-[rgba(22,24,35,0.5)] dark:text-gray-400'>
-              Post a video to your account
-            </p>
-          </div>
-
-          <div className='flex flex-col-reverse items-center md:flex-row'>
-            {/* left */}
-            <label
-              htmlFor='video'
-              className={`${
-                isUploading ? 'bg-gray-100 dark:bg-darkBtnHover' : ''
-              } ${
-                videoAsset ? 'border-none bg-black p-0' : 'p-4'
-              } flex h-[458px] w-[260px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-500 transition-all hover:border-primary`}
-            >
-              {videoAsset ? (
-                <video
-                  src={videoAsset.url}
-                  autoPlay
-                  controls
-                  loop
-                  muted
-                  className='video h-full w-full object-center'
-                />
-              ) : isUploading ? (
-                <>
-                  <div className='h-12 w-12 animate-spin rounded-full border-2 border-l-primary' />
-                  <h3 className='mt-4 animate-pulse text-lg tracking-wide'>
-                    Uploading...
-                  </h3>
-                </>
-              ) : (
-                <>
-                  <div className='flex justify-center text-gray-300'>
-                    <FaCloudUploadAlt size={45} />
-                  </div>
-                  <h3 className='mb-6 text-lg font-semibold text-black dark:text-gray-200'>
-                    Select video to upload
-                  </h3>
-                  <p className='mb-2 text-sm'>MP4 or WebM</p>
-                  <p className='mb-2 text-sm'>720x1280 resolution or higher</p>
-                  <p className='mb-2 text-sm'>Up to 30 minutes</p>
-                  <p className='mb-6 text-sm'>Less than 10 MB</p>
-                  <p className='btn-primary w-4/5 py-2 text-center'>
-                    Select file
-                  </p>
-                  <input
-                    id='video'
-                    type='file'
-                    accept='video/mp4, video/webm'
-                    className='h-0 w-0'
-                    onChange={upload}
-                  />
-                  {isLargeFile ? (
-                    <p className='mt-4 text-center text-sm font-semibold text-red-500'>
-                      {isLargeFile.message}
-                    </p>
-                  ) : (
-                    ''
-                  )}
-                </>
-              )}
-            </label>
-
-            {/* right */}
-            <div className='mb-10 w-full flex-1 md:mb-0 md:pl-8'>
-              <label htmlFor='caption' className='mb-2 block font-semibold'>
-                Caption
-              </label>
-              <input
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                type='text'
-                autoComplete='off'
-                id='caption'
-                className='block w-full rounded-lg border px-3 py-2 shadow-md outline-none dark:border-darkBorder dark:bg-transparent'
-              />
-
-              <p className='mb-2 mt-6 font-semibold'>Choose a topic</p>
-              <SelectTopic
-                selectedTopic={selectedTopic}
-                setSelectedTopic={setSelectedTopic}
-              />
-
-              <div className='mt-12 hidden items-center justify-center gap-4 md:flex'>
-                <button
-                  onClick={handleDiscard}
-                  disabled={isPosting || (!caption && !videoAsset)}
-                  className='btn-secondary w-36 py-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-darkBtnHover dark:disabled:text-gray-500'
-                >
-                  Discard
-                </button>
-
-                <button
-                  onClick={handleUpload}
-                  className='btn-primary w-36 py-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-darkBtnHover dark:disabled:text-gray-500'
-                  disabled={!caption || !videoAsset || isPosting}
-                >
-                  {isPosting ? 'Posting...' : 'Post'}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* mobile layout */}
-          <div className='mt-10 flex items-center justify-center gap-4 xs:mt-12 md:hidden'>
-            <button
-              onClick={handleDiscard}
-              disabled={isPosting || (!caption && !videoAsset)}
-              className='btn-secondary w-36 py-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-darkBtnHover dark:disabled:text-gray-500'
-            >
-              Discard
-            </button>
-
-            <button
-              onClick={handleUpload}
-              className='btn-primary w-36 py-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:disabled:bg-darkBtnHover dark:disabled:text-gray-500'
-              disabled={!caption || !videoAsset || isPosting}
-            >
-              {isPosting ? 'Posting...' : 'Post'}
-            </button>
-          </div>
-        </div>
-      </div>
-    </Layout>
+    <div>
+      <input 
+        type="file"
+        onChange={handleUpload}
+        disabled={isUploading}
+      />
+      {isUploading && (
+        <div>Uploading: {uploadProgress}%</div>
+      )}
+      {uploadError && (
+        <div className="error">{uploadError}</div>
+      )}
+    </div>
   );
-}
+};
+
+export default Upload;
