@@ -34,7 +34,7 @@ export default function Upload() {
     const fileTypes = ['video/mp4', 'video/webm'];
 
     if (selectedFile && fileTypes.includes(selectedFile.type)) {
-      if (selectedFile.size > 10 * 1024 * 1024) {
+      if (selectedFile.size > 100 * 1024 * 1024) {
         setIsLargeFile({ message: 'file size should not exceed 10MB' });
         return;
       } else {
