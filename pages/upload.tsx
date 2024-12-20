@@ -35,9 +35,15 @@ const Upload = () => {
       setUploadProgress(100);
       return result;
 
-    } catch (error) {
+    } catch (error: unknown) { // Explicitly type error as unknown
       console.error('Upload failed:', error);
-      setUploadError(error?.message || 'Upload failed');
+      
+      // Type guard for Error object
+      if (error instanceof Error) {
+        setUploadError(error.message);
+      } else {
+        setUploadError('Upload failed - please try again');
+      }
       return null;
 
     } finally {
