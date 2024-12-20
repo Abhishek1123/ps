@@ -132,7 +132,7 @@ export default function Profile({ data }: Props) {
     setIsRestore(false);
   }, [isRestore, prevScroll, setIsRestore, setPrevScroll]);
 
-  const TITLE = hasNoUser ? 'No User Found' : `${user?.userName} | TikTok`;
+  const TITLE = hasNoUser ? 'No User Found' : `${user?.userName} | property-suchna`;
 
   return (
     <Layout>
@@ -140,7 +140,7 @@ export default function Profile({ data }: Props) {
         <title>{TITLE}</title>
         <meta
           property='og:url'
-          content={`https://tiktok-clone-zhy.vercel.app/profile/${router.query.id}`}
+          content={`https://property-suchna-zhy.vercel.app/profile/${router.query.id}`}
         ></meta>
       </Head>
 

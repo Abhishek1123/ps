@@ -109,7 +109,7 @@ export default function Home({ videos }: Props) {
         <meta property='og:description' content={metadata.description} />
         <meta
           property='og:url'
-          content='https://tiktok-clone-zhy.vercel.app/'
+          content='https://property-suchna-zhy.vercel.app/'
         ></meta>
         <meta
           property='og:image'

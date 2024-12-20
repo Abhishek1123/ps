@@ -38,7 +38,7 @@ export default function Navbar({ hasSidebar }: Props) {
       <div className='mx-auto flex items-center justify-between gap-4 px-2 py-2 lg:px-4'>
         <Link
           href='/'
-          aria-label='TikTok_logo'
+          aria-label='property-suchna_logo'
           className={`${!hasSidebar ? 'block' : 'hidden lg:block'} `}
         >
           {theme === 'dark' ? <LogoDark /> : <LogoLight />}

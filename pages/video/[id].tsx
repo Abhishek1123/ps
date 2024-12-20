@@ -23,7 +23,7 @@ export default function VideoDetail({ videoDetail }: DetailProps) {
 
   const TITLE = !videoDetail
     ? 'No video found'
-    : `${videoDetail.caption} | TikTok Video`;
+    : `${videoDetail.caption} | property-suchna Video`;
 
   // set isRestore to true before history change to keep previous scroll in next page
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function VideoDetail({ videoDetail }: DetailProps) {
         <title>{TITLE}</title>
         <meta
           property='og:url'
-          content={`https://tiktok-clone-zhy.vercel.app/video/${router.query.id}`}
+          content={`https://property-suchna-zhy.vercel.app/video/${router.query.id}`}
         ></meta>
       </Head>
 

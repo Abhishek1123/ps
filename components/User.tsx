@@ -79,7 +79,7 @@ export default function User() {
                   } text-gray-800 dark:text-gray-200 group flex justify-between w-full items-center rounded-md px-2 py-2`}
                   onClick={() => {
                     window.open(
-                      "https://github.com/zwelhtetyan/tiktok-clone",
+                      "https://github.com/zwelhtetyan/property-suchna",
                       "_blank"
                     );
                   }}

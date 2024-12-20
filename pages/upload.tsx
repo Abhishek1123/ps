@@ -106,10 +106,10 @@ export default function Upload() {
   return (
     <Layout>
       <Head>
-        <title>Upload | Tik Tok</title>
+        <title>Upload | Property Suchna</title>
         <meta
           property='og:url'
-          content='https://tiktok-clone-zhy.vercel.app/upload'
+          content='https://property-suchna-zhy.vercel.app/upload'
         ></meta>
       </Head>
 

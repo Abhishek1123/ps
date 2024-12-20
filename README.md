@@ -1,4 +1,4 @@
-<h2 align='center'>TikTok clone | video sharing web app</h2>
+<h2 align='center'>property-suchna 1 | video sharing web app</h2>
 
 ![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/8ia7odl3vkqcurq6v91s.png)
 
@@ -37,16 +37,16 @@
 
 ### :running: Run Locally
 
-#### Clone the project
+#### 1 the project
 
 ```bash
-  git@github.com:zwelhtetyan/tiktok-clone.git
+  git@github.com:zwelhtetyan/property-suchna.git
 ```
 
 #### Go to the project directory
 
 ```bash
-  cd tiktok-clone
+  cd property-suchna
 ```
 
 #### Remove remote origin
@@ -116,7 +116,7 @@ module.exports = {
 
 And then, you can view sanity studio on [http://localhosts:3333](http://localhosts:3333)
 
-### Add env in the root folder (`tiktok-clone/.env.local`)
+### Add env in the root folder (`property-suchna/.env.local`)
 
 Get your `TOKEN` and `PROJECTID` from sanity studio
 
@@ -130,7 +130,7 @@ Get your `TOKEN` and `PROJECTID` from sanity studio
 
 #### Run the app
 
-Please make sure you are in the root folder (`/tiktok-clone:`)
+Please make sure you are in the root folder (`/property-suchna:`)
 
 ```bash
   yarn dev

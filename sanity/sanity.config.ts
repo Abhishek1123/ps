@@ -5,7 +5,7 @@ import {schemaTypes} from './schemas'
 
 export default defineConfig({
   name: 'default',
-  title: 'TitTok-clone',
+  title: 'TitTok-1',
 
   projectId: '2qv2ei73',
   dataset: 'production',

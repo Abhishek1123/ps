@@ -1,5 +1,5 @@
 import PopularTopics from './PopularTopics';
-import { RiGithubFill, RiHomeSmileFill } from 'react-icons/ri';
+import { RiHomeSmileFill } from 'react-icons/ri'; // Removed unused RiGithubFill
 import SuggestedAccounts from './SuggestedAccounts';
 import Link from 'next/link';
 import { useRouter } from 'next/router';

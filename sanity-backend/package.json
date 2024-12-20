@@ -1,5 +1,5 @@
 {
-  "name": "property-suchna",
+  "name": "propsuch",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
@@ -15,22 +15,18 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/icons": "^2.1.0",
-    "@sanity/ui": "2.0.0",
-    "@sanity/vision": "^3.14.3",
+    "@sanity/vision": "^3.68.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-is": "^18.2.0",
-    "sanity": "^3.14.3",
-    "styled-components": "6.0.0"
+    "sanity": "^3.68.2",
+    "styled-components": "^6.1.8"
   },
   "devDependencies": {
-    "@sanity/eslint-config-studio": "^2.0.4",
+    "@sanity/eslint-config-studio": "^5.0.1",
     "@types/react": "^18.0.25",
-    "@types/styled-components": "^5.1.26",
-    "eslint": "^8.6.0",
-    "prettier": "^2.8.8",
-    "typescript": "^4.9.5"
+    "eslint": "^9.9.0",
+    "prettier": "^3.0.2",
+    "typescript": "^5.1.6"
   },
   "prettier": {
     "semi": false,
