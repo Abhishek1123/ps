@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import axios from 'axios';
 import { ROOT_URL } from '../utils';
+import { createClient } from '@sanity/client';
 
 interface Event<T = EventTarget> {
   target: T;
@@ -28,35 +29,50 @@ export default function Upload() {
   const [isUploading, setIsUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [isLargeFile, setIsLargeFile] = useState({ message: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [wrongFileType, setWrongFileType] = useState(false);
 
-  async function uploadFile(e: Event<HTMLInputElement>) {
-    const selectedFile = e.target.files![0] as File;
-    const fileTypes = ['video/mp4', 'video/webm'];
+  const upload = async (e: any) => {
+    try {
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) return;
 
-    if (selectedFile && fileTypes.includes(selectedFile.type)) {
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setIsLargeFile({ message: 'file size should not exceed 10MB' });
+      const fileTypes = ['image/png', 'image/jpeg', 'video/mp4', 'video/webm'];
+      if (!fileTypes.includes(selectedFile.type)) {
+        setWrongFileType(true);
         return;
-      } else {
-        setIsLargeFile({ message: '' });
       }
 
-      setIsUploading(true);
+      // Add loading state
+      setIsLoading(true);
 
-      try {
-        const video = await client.assets.upload('file', selectedFile, {
-          contentType: selectedFile.type,
-          filename: selectedFile.name,
-        });
-
-        setVideoAsset(video);
-        setIsUploading(false);
-      } catch (error) {
-        setIsUploading(false);
-        console.log(error);
+      // Check if environment variables exist
+      if (!process.env.NEXT_PUBLIC_SANITY_TOKEN) {
+        throw new Error('Sanity token not configured');
       }
+
+      const client = createClient({
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
+        dataset: 'production',
+        apiVersion: '2022-03-07',
+        token: process.env.NEXT_PUBLIC_SANITY_TOKEN,
+        useCdn: false,
+      });
+
+      const data = await client.assets.upload('file', selectedFile, {
+        contentType: selectedFile.type,
+        filename: selectedFile.name,
+      });
+
+      setVideoAsset(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsLoading(false);
+      // Show user-friendly error
+      alert('Upload failed. Please try again.');
     }
-  }
+  };
 
   async function handleUpload() {
     if (!caption || !videoAsset) return;
@@ -107,10 +123,7 @@ export default function Upload() {
     <Layout>
       <Head>
         <title>Upload | Property Suchna</title>
-        <meta
-          property='og:url'
-          content='https://property-suchna-zhy.vercel.app/upload'
-        ></meta>
+        
       </Head>
 
       <div className='h-[calc(100vh-97px)] w-full overflow-hidden overflow-y-auto text-gray-600 dark:text-gray-200'>
@@ -168,7 +181,7 @@ export default function Upload() {
                     type='file'
                     accept='video/mp4, video/webm'
                     className='h-0 w-0'
-                    onChange={uploadFile}
+                    onChange={upload}
                   />
                   {isLargeFile ? (
                     <p className='mt-4 text-center text-sm font-semibold text-red-500'>
